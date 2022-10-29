@@ -1,0 +1,15 @@
+# Create a Microsoft Azure Resource Group With Ansible
+- name: Create a resource group
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+  - name: Create a resource group
+    azure_rm_resourcegroup:
+      name: WSL
+      location: westus
+      tags:
+        Environment: PROD
+
+- name: Create a resource group
+

@@ -1,0 +1,9 @@
+- name: Get info about Azure subscription
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Get facts for one subscription by name
+    azure_rm_resourcegroup_info:
+      name: WSL
+      list_resources: yes
+      register: azure

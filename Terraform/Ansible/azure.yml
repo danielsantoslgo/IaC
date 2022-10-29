@@ -1,0 +1,32 @@
+#Create Docker Container
+
+- hosts: localhost
+  tasks:
+  - name: Create a data container
+    community.docker.docker_container:
+      name: myansiblecontainer
+      image: ubuntu
+      state: absent
+
+#Azure vm start machine
+
+- hosts: localhost
+  tasks:
+  - name: Power On
+    azure_rm_virtualmachine:
+      resource_group: my-resources
+      name: linux-machine
+
+
+  #Azure vm shutdown machine 
+- hosts: localhost
+  tasks:
+  - name: Power On
+    azure_rm_virtualmachine:
+      resource_group: my-resources
+      name: linux-machine
+      started: no
+
+
+
+

@@ -1,0 +1,10 @@
+- name: Create a storage account on Microsoft Azure
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+  tasks:
+  - name: Create storage account
+    azure_rm_storageaccount:
+      resource_group: WSL
+      name: testaccountnrw001
+      account_type: Standard_LRS

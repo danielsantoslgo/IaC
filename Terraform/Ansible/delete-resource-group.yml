@@ -1,0 +1,10 @@
+- name: Manage Microsft Azure
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+  - name: Delete a resource group
+    azure_rm_resourcegroup:
+      name: WSL
+      force_delete_nonempty: yes
+      state: absent

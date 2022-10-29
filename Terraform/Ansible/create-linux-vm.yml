@@ -1,0 +1,72 @@
+# Create a Linux Virtual Machine on Azure With Ansible
+
+- name: Create a resource group
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+  - name: Create a resource group
+    azure_rm_resourcegroup:
+      name: WSL
+      location: westus
+      tags:
+        Environment: PROD
+
+  - name: Create a virtual network
+    azure_rm_virtualnetwork:
+      resource_group: WSL
+      name: wsl_network
+      address_prefixes: "10.0.0.0/16"
+
+  - name: Create a subnet
+    azure_rm_subnet:
+      resource_group: WSL
+      virtual_network: wsl_network
+      name: hosts
+      address_prefix: "10.0.1.0/24"
+
+  - name: Create a public IP address
+    azure_rm_publicipaddress:
+      resource_group: WSL
+      allocation_method: Static
+      name: ubuntulinux-pub-ip
+
+  - name: Create a Network Security Group and Open SSH port
+    azure_rm_securitygroup:
+      resource_group: wsl
+      name: wsl_nsg
+      rules:
+      - name: RDP
+        protocol: Tcp
+        destination_port_range: 22
+        access: Allow
+        priority: 100
+        direction: Inbound
+
+  - name: Create a virtual network interface card
+    azure_rm_networkinterface:
+      resource_group: wsl
+      name: wsl_nic
+      virtual_network: wsl_network
+      subnet: hosts
+      public_ip_name: ubuntulinux-pub-ip
+      security_group: wsl_nsg
+
+  - name: Create a VM with a managed disk
+    azure_rm_virtualmachine:
+      resource_group: WSL
+      name: ubuntulinux
+      admin_username: vmadmin
+      admin_password: SETADMINPASSWORD
+      ssh_public_keys:
+      - path: /home/vadmin/.ssh/authorized_keys
+        key_data: Paste SSH public key here
+      managed_disk_type: Standard_LRS
+      image:
+        offer: 0001-com-ubuntu-server-focal
+        publisher: canonical
+        sku: 20_04-lts
+        version: latest
+      vm_size: Standard_b2s
+      os_type: Linux
+      network_interfaces: wsl_nic
